@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RANSOMWARE ALERT — Deleting files</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root{--bg:#0b0b0b;--accent:#ff3b3b;--accent2:#ff7a00;--good:#18c77a;--muted:#a6a6a6}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial; background:linear-gradient(180deg,#040404 0%, #0b0b0b 100%);color:#fff}
+    .wrap{max-width:980px;margin:28px auto;padding:22px}
+    header{display:flex;align-items:center;gap:14px}
+    header h1{font-size:20px;margin:0;color:var(--accent)}
+    .sub{color:var(--muted);font-size:13px}
+
+    .status-card{margin-top:18px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,59,59,0.08);box-shadow:0 8px 20px rgba(0,0,0,0.6)}
+
+    .big {font-size:18px;font-weight:600;color:var(--accent2)}
+
+    .progress-wrap{margin:18px 0}
+    .progress-bar{width:100%;height:18px;border-radius:999px;background:rgba(255,255,255,0.04);overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s ease}
+
+    .media-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
+    .media-item{background:rgba(255,255,255,0.02);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:10px}
+    .thumb{width:72px;height:56px;background:linear-gradient(135deg,#111,#222);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+    .meta{flex:1}
+    .meta .name{font-weight:600;color:#fff}
+    .meta .small{font-size:12px;color:var(--muted)}
+    .meta .status{margin-top:6px;font-weight:700}
+
+    .controls{display:flex;gap:8px;align-items:center;margin-top:16px}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+    .danger{color:var(--accent);font-weight:700}
+    .done{color:var(--good);font-weight:700}
+
+    .center{display:flex;align-items:center;justify-content:center}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:560px){.media-list{grid-template-columns:repeat(2,1fr)}header h1{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <i class="fas fa-trash-alt" style="color:var(--accent);font-size:22px"></i>
+      <div>
+        <h1>Deletion Sequence — Upload interrupted / destroying local copies</h1>
+      
+    </header>
+
+    <div class="status-card">
+      <div class="big">Operation status: <span id="opStatus" class="danger">Active</span></div>
+
+      <div class="progress-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="sub">Deleting local media files</div>
+          <div id="progressPct">0%</div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div style="margin-top:10px;color:var(--muted);font-size:13px">
+        Items processed: <span id="processed">0</span> / <span id="total">0</span>
+      </div>
+
+      <div class="controls" id="controls">
+        <button id="simulateBtn">Start Deletion Simulation</button>
+        <button class="secondary" id="stopBtn">Pause</button>
+        <button class="secondary" id="resetBtn">Reset Simulation</button>
+      </div>
+
+      <div class="media-list" id="mediaList" aria-live="polite"></div>
+
+      <div style="margin-top:12px" id="finalMsg"></div>
+    </div>
+
+    
+  </div>
+
+  <script>
+    // Safety: purely front-end simulation. It cannot access or delete local files.
+
+    // Require unlocked flag (set by previous page) — if missing, send user back.
+    try {
+      const unlocked = localStorage.getItem('unlocked');
+      if (unlocked !== 'true') {
+        // not authorized — redirect back to main page
+        window.location.href = 'index.html';
+      }
+    } catch(e) {
+      // if localStorage not available, continue but keep a visible warning
+      console.warn('localStorage unavailable');
+    }
+
+    const mediaFiles = [];
+    // build a sample list matching names used on the first page (only labels; no file access)
+    for (let i = 1; i <= 68; i++) {
+      // mix images and videos heuristically
+      const isVideo = i > 64 && i <= 68; // last 4 are videos in original
+      mediaFiles.push({
+        id: i,
+        name: (isVideo ? `video${i-64}.mp4` : `pic${i}.jpg`),
+        type: (isVideo ? 'video' : 'image'),
+        status: 'queued'
+      });
+    }
+
+    // DOM refs
+    const mediaList = document.getElementById('mediaList');
+    const totalElem = document.getElementById('total');
+    const processedElem = document.getElementById('processed');
+    const progressFill = document.getElementById('progressFill');
+    const progressPct = document.getElementById('progressPct');
+    const opStatus = document.getElementById('opStatus');
+    const finalMsg = document.getElementById('finalMsg');
+
+    let total = mediaFiles.length;
+    let processed = 0;
+    let currentIndex = 0;
+    let intervalId = null;
+    let paused = true;
+    let deletedFlag = localStorage.getItem('deleted') === 'true';
+
+    totalElem.textContent = total;
+    processedElem.textContent = processed;
+
+    function renderList() {
+      mediaList.innerHTML = '';
+      mediaFiles.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'media-item';
+        el.id = `item-${item.id}`;
+        el.innerHTML = `
+          <div class="thumb">${item.type === 'video' ? '<i class="fas fa-film"></i>' : '<i class="fas fa-image"></i>'}</div>
+          <div class="meta">
+            <div class="name">${item.name}</div>
+            <div class="small">Type: ${item.type}</div>
+            <div class="status" id="status-${item.id}">${item.status === 'queued' ? '<span class="danger">Queued</span>' : item.status}</div>
+          </div>
+        `;
+        mediaList.appendChild(el);
+      });
+    }
+
+    renderList();
+
+    function updateProgressUI() {
+      processedElem.textContent = processed;
+      const pct = Math.round((processed / total) * 100);
+      progressFill.style.width = pct + '%';
+      progressPct.textContent = pct + '%';
+    }
+
+    function simulateStep() {
+      if (currentIndex >= mediaFiles.length) {
+        completeSequence();
+        return;
+      }
+
+      const item = mediaFiles[currentIndex];
+      // mark as deleting
+      item.status = 'deleting';
+      const statusEl = document.getElementById(`status-${item.id}`);
+      if (statusEl) statusEl.innerHTML = '<span class="danger">Deleting...</span>';
+
+      // simulate deletion delay (randomized a bit)
+      const delay = 550 + Math.floor(Math.random() * 900);
+      setTimeout(() => {
+        item.status = 'deleted';
+        processed++;
+        const statusEl2 = document.getElementById(`status-${item.id}`);
+        if (statusEl2) statusEl2.innerHTML = '<span class="done">Deleted</span>';
+        currentIndex++;
+        updateProgressUI();
+        // persist processed count so returning still shows progress
+        try { localStorage.setItem('processedCount', processed); } catch(e){}
+      }, delay);
+    }
+
+    function startSimulation() {
+      if (deletedFlag) {
+        finalMsg.innerHTML = '<div class="done">All files were previously deleted.</div>';
+        opStatus.textContent = 'Completed';
+        opStatus.className = 'done';
+        return;
+      }
+      if (!paused) return;
+      paused = false;
+      opStatus.textContent = 'Active';
+      opStatus.className = 'danger';
+      intervalId = setInterval(() => {
+        if (paused) return;
+        // process a few items per tick to feel faster
+        simulateStep();
+      }, 900);
+    }
+
+    function pauseSimulation() {
+      paused = true;
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      opStatus.textContent = 'Paused';
+      opStatus.className = '';
+    }
+
+    function resetSimulation() {
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      processed = 0; currentIndex = 0; paused = true; deletedFlag = false;
+      mediaFiles.forEach(m => m.status = 'queued');
+      try { localStorage.removeItem('deleted'); localStorage.removeItem('processedCount'); } catch(e){}
+      renderList(); updateProgressUI(); opStatus.textContent = 'Idle'; finalMsg.innerHTML = '';
+    }
+
+    function completeSequence() {
+      if (intervalId) { clearInterval(intervalId); intervalId = null; }
+      paused = true;
+      opStatus.textContent = 'Completed';
+      opStatus.className = 'done';
+      finalMsg.innerHTML = '<div class="done"><i class="fas fa-check-circle"></i> All local copies marked as deleted. Operation finished.</div>';
+      // set deleted flag so returning keeps the state
+      deletedFlag = true;
+      try { localStorage.setItem('deleted', 'true'); } catch(e){}
+    }
+
+    // Wire buttons
+    document.getElementById('simulateBtn').addEventListener('click', () => {
+      startSimulation();
+    });
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      if (paused) { startSimulation(); document.getElementById('stopBtn').textContent = 'Pause'; }
+      else { pauseSimulation(); document.getElementById('stopBtn').textContent = 'Resume'; }
+    });
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      if (!confirm('Reset the simulation? This will clear the simulated progress display.')) return;
+      resetSimulation();
+      document.getElementById('stopBtn').textContent = 'Pause';
+    });
+
+    // restore processed count if present
+    try {
+      const savedProcessed = parseInt(localStorage.getItem('processedCount') || '0', 10);
+      if (!isNaN(savedProcessed) && savedProcessed > 0) {
+        processed = Math.min(savedProcessed, total);
+        // mark the first `processed` items as deleted in the array
+        for (let i=0;i<processed;i++) mediaFiles[i].status = 'deleted';
+        currentIndex = processed;
+        renderList(); updateProgressUI();
+        if (processed >= total) {
+          completeSequence();
+        }
+      }
+    } catch(e) {}
+
+    // auto-start if not already deleted
+    if (!deletedFlag && processed === 0) {
+      // automatic small delay so user sees page
+      setTimeout(() => { startSimulation(); }, 900);
+    }
+
+    // Accessibility: expose keyboard controls
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' ) {
+        e.preventDefault();
+        if (paused) startSimulation(); else pauseSimulation();
+      }
+    });
+
+    // Expose for debug
+    window.simulation = { startSimulation, pauseSimulation, resetSimulation, mediaFiles };
+  </script>
+</body>
+</html>

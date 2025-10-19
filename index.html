@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RANSOMWARE ALERT - YOUR PHOTOS WILL BE LEAKED!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #000 0%, #111 100%);
+            color: #ff0000;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 10px;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        header {
+            background: linear-gradient(90deg, #222 0%, #000 100%);
+            color: #ff0000;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 3px solid #ff0000;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 36px;
+            text-shadow: 2px 2px 4px #ff0000;
+            margin: 20px 0;
+        }
+        .warning {
+            font-size: 18px;
+            margin: 20px;
+            line-height: 1.5;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ff0000;
+        }
+        .matrix-container {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            margin: 20px 0;
+            border: 2px solid #00ff00;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .progress {
+            margin: 20px 0;
+        }
+        .progress-bar {
+            width: 80%;
+            height: 25px;
+            background-color: #333;
+            border: 2px solid #ff0000;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000 0%, #ff4500 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .countdown {
+            font-size: 28px;
+            margin: 20px;
+            font-weight: bold;
+            color: #ff4500;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 0 10px;
+        }
+        .media-item {
+            border: 2px solid #ff0000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        .media-item:hover {
+            transform: scale(1.05);
+        }
+        img, video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .controls {
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ff0000;
+        }
+        input {
+            font-size: 16px;
+            padding: 12px;
+            margin: 10px;
+            width: 250px;
+            max-width: 80%;
+            border: 2px solid #ff0000;
+            background: #000;
+            color: #ff0000;
+            border-radius: 4px;
+        }
+        button {
+            font-size: 16px;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #ff0000 0%, #ff4500 100%);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #ff4500 0%, #ff0000 100%);
+        }
+        .unlocked {
+            display: none;
+            color: #00ff00;
+            font-size: 24px;
+            margin: 20px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            header {
+                font-size: 18px;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .warning {
+                font-size: 16px;
+                padding: 10px;
+            }
+            .countdown {
+                font-size: 24px;
+            }
+            .matrix-container {
+                height: 150px;
+            }
+            .media-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            img, video {
+                height: 120px;
+            }
+            input {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <i class="fas fa-exclamation-triangle"></i> RANSOMWARE DETECTION SYSTEM - ALERT LEVEL: CRITICAL - SYSTEM COMPROMISED <i class="fas fa-exclamation-triangle"></i>
+    </header>
+    <h1>⚠️ RANSOMWARE DETECTED ⚠️</h1>
+    <div class="warning">
+        <i class="fas fa-skull-crossbones"></i> Your device has been infiltrated by advanced persistent malware. Encryption protocols are active and irreversible.<br>
+        All 68 personal photos and 4 private videos are being scanned, compressed, and queued for upload to the dark web.<br>
+        <strong>CRITICAL WARNING:</strong> If you attempt to report this, shut down the device, or perform any system modifications, the upload will accelerate, releasing your data to the entire internet immediately.<br>
+        Consequences include permanent data exposure, blackmail, and social ruin. Decrypt now or face irreversible damage. <i class="fas fa-skull-crossbones"></i>
+    </div>
+    <div class="matrix-container">
+        <canvas id="matrixCanvas"></canvas>
+    </div>
+    <div class="progress">
+        <div><i class="fas fa-upload"></i> Dark Web Upload Progress:</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+    <div class="countdown" id="timer">Time remaining: Calculating...</div>
+    <div class="media-grid" id="mediaContainer">
+        <!-- 40 Images -->
+        <div class="media-item"><img src="pic1.jpg" alt="Compromised Photo 1"></div>
+        <div class="media-item"><img src="pic2.jpg" alt="Compromised Photo 2"></div>
+        <div class="media-item"><img src="pic3.jpg" alt="Compromised Photo 3"></div>
+        <div class="media-item"><img src="pic4.jpg" alt="Compromised Photo 4"></div>
+        <div class="media-item"><img src="pic5.jpg" alt="Compromised Photo 5"></div>
+        <div class="media-item"><img src="pic6.jpg" alt="Compromised Photo 6"></div>
+        <div class="media-item"><img src="pic7.jpg" alt="Compromised Photo 7"></div>
+        <div class="media-item"><img src="pic8.jpg" alt="Compromised Photo 8"></div>
+        <div class="media-item"><img src="pic9.jpg" alt="Compromised Photo 9"></div>
+        <div class="media-item"><img src="pic10.jpg" alt="Compromised Photo 10"></div>
+        <div class="media-item"><img src="pic11.jpg" alt="Compromised Photo 11"></div>
+        <div class="media-item"><img src="pic12.jpg" alt="Compromised Photo 12"></div>
+        <div class="media-item"><img src="pic13.jpg" alt="Compromised Photo 13"></div>
+        <div class="media-item"><img src="pic14.jpg" alt="Compromised Photo 14"></div>
+        <div class="media-item"><img src="pic15.jpg" alt="Compromised Photo 15"></div>
+        <div class="media-item"><img src="pic16.jpg" alt="Compromised Photo 16"></div>
+        <div class="media-item"><img src="pic17.jpg" alt="Compromised Photo 17"></div>
+        <div class="media-item"><img src="pic18.jpg" alt="Compromised Photo 18"></div>
+        <div class="media-item"><img src="pic19.jpg" alt="Compromised Photo 19"></div>
+        <div class="media-item"><img src="pic20.jpg" alt="Compromised Photo 20"></div>
+        <div class="media-item"><img src="pic21.jpg" alt="Compromised Photo 21"></div>
+        <div class="media-item"><img src="pic22.jpg" alt="Compromised Photo 22"></div>
+        <div class="media-item"><img src="pic23.jpg" alt="Compromised Photo 23"></div>
+        <div class="media-item"><img src="pic24.jpg" alt="Compromised Photo 24"></div>
+        <div class="media-item"><img src="pic25.jpg" alt="Compromised Photo 25"></div>
+        <div class="media-item"><img src="pic26.jpg" alt="Compromised Photo 26"></div>
+        <div class="media-item"><img src="pic27.jpg" alt="Compromised Photo 27"></div>
+        <div class="media-item"><img src="pic28.jpg" alt="Compromised Photo 28"></div>
+        <div class="media-item"><img src="pic29.jpg" alt="Compromised Photo 29"></div>
+        <div class="media-item"><img src="pic30.jpg" alt="Compromised Photo 30"></div>
+        <div class="media-item"><img src="pic31.jpg" alt="Compromised Photo 31"></div>
+        <div class="media-item"><img src="pic32.jpg" alt="Compromised Photo 32"></div>
+        <div class="media-item"><img src="pic33.jpg" alt="Compromised Photo 33"></div>
+        <div class="media-item"><img src="pic34.jpg" alt="Compromised Photo 34"></div>
+        <div class="media-item"><img src="pic35.jpg" alt="Compromised Photo 35"></div>
+        <div class="media-item"><img src="pic36.jpg" alt="Compromised Photo 36"></div>
+        <div class="media-item"><img src="pic37.jpg" alt="Compromised Photo 37"></div>
+        <div class="media-item"><img src="pic38.jpg" alt="Compromised Photo 38"></div>
+        <div class="media-item"><img src="pic39.jpg" alt="Compromised Photo 39"></div>
+        <div class="media-item"><img src="pic40.jpg" alt="Compromised Photo 40"></div>
+          <div class="media-item"><img src="pic41.jpg" alt="Compromised Photo 1"></div>
+        <div class="media-item"><img src="pic42.jpg" alt="Compromised Photo 2"></div>
+        <div class="media-item"><img src="pic43.jpg" alt="Compromised Photo 3"></div>
+        <div class="media-item"><img src="pic44.jpg" alt="Compromised Photo 4"></div>
+        <div class="media-item"><img src="pic45.jpg" alt="Compromised Photo 5"></div>
+        <div class="media-item"><img src="pic46.jpg" alt="Compromised Photo 6"></div>
+        <div class="media-item"><img src="pic47.jpg" alt="Compromised Photo 7"></div>
+        <div class="media-item"><img src="pic48.jpg" alt="Compromised Photo 8"></div>
+        <div class="media-item"><img src="pic49.jpg" alt="Compromised Photo 9"></div>
+        <div class="media-item"><img src="pic50.jpg" alt="Compromised Photo 10"></div>
+        <div class="media-item"><img src="pic51.jpg" alt="Compromised Photo 11"></div>
+        <div class="media-item"><img src="pic52.jpg" alt="Compromised Photo 12"></div>
+        <div class="media-item"><img src="pic53.jpg" alt="Compromised Photo 13"></div>
+        <div class="media-item"><img src="pic54.jpg" alt="Compromised Photo 14"></div>
+        <div class="media-item"><img src="pic55.jpg" alt="Compromised Photo 15"></div>
+        <div class="media-item"><img src="pic56.jpg" alt="Compromised Photo 16"></div>
+        <div class="media-item"><img src="pic57.jpg" alt="Compromised Photo 17"></div>
+        <div class="media-item"><img src="pic58.jpg" alt="Compromised Photo 18"></div>
+        <div class="media-item"><img src="pic59.jpg" alt="Compromised Photo 19"></div>
+        <div class="media-item"><img src="pic60.jpg" alt="Compromised Photo 20"></div>
+        <div class="media-item"><img src="pic61.jpg" alt="Compromised Photo 21"></div>
+        <div class="media-item"><img src="pic62.jpg" alt="Compromised Photo 22"></div>
+        <div class="media-item"><img src="pic63.jpg" alt="Compromised Photo 23"></div>
+        <div class="media-item"><img src="pic64.jpg" alt="Compromised Photo 24"></div>
+        <div class="media-item"><img src="pic65.jpg" alt="Compromised Photo 25"></div>
+          <div class="media-item"><img src="pic66.jpg" alt="Compromised Photo 23"></div>
+        <div class="media-item"><img src="pic67.jpg" alt="Compromised Photo 24"></div>
+        <div class="media-item"><img src="pic68.jpg" alt="Compromised Photo 25"></div>
+        <!-- 4 Videos -->
+        <div class="media-item"><video controls><source src="video1.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
+        <div class="media-item"><video controls><source src="video2.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
+        <div class="media-item"><video controls><source src="video3.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
+        <div class="media-item"><video controls><source src="video4.mp4" type="video/mp4">Your browser does not support the video tag.</video></div>
+    </div>
+    <div class="controls">
+        <input type="text" id="keyInput" placeholder="Enter Decryption Key">
+        <button onclick="checkKey()"><i class="fas fa-key"></i> Initiate Decryption Sequence</button>
+    </div>
+    <div class="unlocked" id="unlockedMsg"><i class="fas fa-check-circle"></i> Decryption Successful! Malware neutralized... for now.</div>
+
+   <script>
+   
+    const secretKey = "QRJ2025HsLLL@@"; // 🔐 Decryption Key
+    const countdownElement = document.getElementById('timer');
+    const unlockedMsg = document.getElementById('unlockedMsg');
+    const progressFill = document.getElementById('progressFill');
+    let progress = 0;
+
+    // --- Storage helpers: prefer localStorage, fallback to cookies ---
+    function setValue(key, value) {
+        try {
+            localStorage.setItem(key, String(value));
+        } catch (e) {
+            // fallback to cookie (days param default: 30)
+            const days = 30;
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${key}=${encodeURIComponent(value)};expires=${date.toUTCString()};path=/`;
+        }
+    }
+
+    function getValue(key) {
+        try {
+            const v = localStorage.getItem(key);
+            if (v !== null) return v;
+        } catch (e) {
+            // ignore and fallback to cookie
+        }
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${key}=`);
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(";").shift());
+        return null;
+    }
+
+    // 🔁 Auto-redirect if already unlocked (runs immediately)
+    if (getValue('unlocked') === 'true') {
+        window.location.href = 'deletes.html';
+    }
+
+    // ⏲️ Countdown setup (persisted)
+    const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+    let endTime = getValue('endTime');
+
+    if (!endTime) {
+        // store absolute timestamp for end time
+        endTime = Date.now() + TWO_DAYS_MS;
+        setValue('endTime', String(endTime));
+    } else {
+        endTime = parseInt(endTime, 10);
+        // If parsing failed or value is invalid, reset it once (but keep persisted next time).
+        if (isNaN(endTime) || endTime < Date.now() - TWO_DAYS_MS) {
+            endTime = Date.now() + TWO_DAYS_MS;
+            setValue('endTime', String(endTime));
+        }
+    }
+
+    function updateCountdown() {
+        const now = Date.now();
+        const timeLeft = endTime - now;
+        if (timeLeft <= 0) {
+            countdownElement.textContent = "Time's up! Data leaked to dark web!";
+            progressFill.style.width = '100%';
+            // Optional: mark as leaked/unlocked state if you want automatic redirect later
+            // setValue('unlocked', 'true');
+            return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        countdownElement.textContent = `Time remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+        // progress = portion elapsed from the original 2-day window
+        const elapsed = TWO_DAYS_MS - timeLeft;
+        progress = Math.min(100, (elapsed / TWO_DAYS_MS) * 100);
+        progressFill.style.width = progress + '%';
+    }
+
+    function checkKey() {
+        const input = document.getElementById('keyInput').value.trim();
+        if (input === secretKey) {
+            unlockedMsg.style.display = 'block';
+            countdownElement.textContent = "Decryption successful!";
+            progressFill.style.width = '0%';
+            setValue('unlocked', 'true'); // persist unlocked state
+            // keep endTime in storage if you want, but unlocked takes precedence
+            setTimeout(() => {
+                window.location.href = 'deletes.html';
+            }, 1500); // 1.5s delay to show success message
+        } else {
+            alert("❌ Invalid key! Security breach escalated. Upload accelerating!");
+            progress = Math.min(100, progress + 10);
+            progressFill.style.width = progress + '%';
+            // Optionally speed up the countdown by reducing endTime (uncomment if desired)
+            // endTime = Math.max(Date.now(), endTime - 1000 * 60 * 5); // remove 5 minutes as penalty
+            // setValue('endTime', String(endTime));
+        }
+    }
+
+    // 💻 Matrix animation (same as before)
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    // ensure canvas uses actual displayed size
+    function resizeCanvas() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+    });
+
+    const matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+    const fontSize = 14;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = [];
+    function initDrops() {
+        columns = Math.floor(canvas.width / fontSize) || 1;
+        drops = [];
+        for (let x = 0; x < columns; x++) drops[x] = 1;
+    }
+    initDrops();
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00ff00';
+        ctx.font = fontSize + 'px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = matrixChars.charAt(Math.floor(Math.random() * matrixChars.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            }
+            drops[i]++;
+        }
+    }
+
+    setInterval(drawMatrix, 35);
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // expose checkKey to global so button onclick continues to work
+    window.checkKey = checkKey;
+</script>
+</body>
+</html>
